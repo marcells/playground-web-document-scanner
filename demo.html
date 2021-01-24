@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Scanner</title>
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://unpkg.com/opencv.js@1.2.1/opencv.js"></script>
+  <script type="text/javascript" src="utils.js"></script>
+  <script type="text/javascript" src="demo.js"></script>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+    <div class="video-view">
+        <select id="devices">
+            <option value="choose">Please choose camera</option>
+        </select>
+
+        <div class="video">
+            <video id="videoInput" width=320 height=240 autoplay playsinline></video>
+            <canvas id="overlay" width=320 height=240></canvas>
+
+            <video id="edgeDetectionVideo" width=320 height=240 style="display: none;"></video>
+            
+            <video id="processingVideo" width=320 height=240 style="display: none;"></video>
+            <canvas id="scannedDocument" width=320 height=240 style="display: none;"></canvas>
+        </div>
+    </div>
+
+    <div class="video-content">
+        <button id="scan-button" style="display: none;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>  
+    </div>
+</body>
+</html>

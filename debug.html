@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Scanner</title>
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://unpkg.com/opencv.js@1.2.1/opencv.js"></script>
+  <script type="text/javascript" src="utils.js"></script>
+  <script type="text/javascript" src="logic.js"></script>
+</head>
+<body>
+    <h1>Web Scanner</h1>
+
+    <h2>Video</h2>
+    <video id="videoInput" width=320 height=240></video>
+
+    <h2>Edge recognition</h2>
+    <canvas id="debugPreviewEdges" width=320 height=240></canvas>
+    <canvas id="debugPreviewArea" width=320 height=240></canvas>
+
+    <h2>Perspective correction</h2>
+    <canvas id="debugPreviewTransformedPerspective" width=320 height=240></canvas>
+
+    <h2>Final sharpened image</h2>
+    <canvas id="preview" width=320 height=240></canvas>
+</body>
+</html>
