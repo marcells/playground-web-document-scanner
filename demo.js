@@ -154,7 +154,7 @@ $(async function() {
             // start processing.
             cap.read(src);
             
-            // contourDetails = getContourDetails(src, edges => cv.imshow(overlay, edges));
+            // const tempContourDetails = getContourDetails(src, edges => cv.imshow(overlay, edges));
             const tempContourDetails = getContourDetails(src, edges => {});
 
             if (tempContourDetails !== null) {
@@ -165,10 +165,6 @@ $(async function() {
                 // cv.imshow(overlay, src);
                 drawPoints(contourDetails, overlay, overlayRatio);
             }
-            // else
-            // {
-            //     contourDetails = null;
-            // }
 
             // schedule processing
             // let delay = 1000/FPS - (Date.now() - begin);
