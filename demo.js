@@ -30,7 +30,7 @@ $(async function() {
             streaming = false;
             scanned = true;
 
-            const transformedPerspective = transformPerspective(src, contourDetails, ratio);
+            const transformedPerspective = transformPerspective(src, contourDetails, edgeRatio);
             const improvedSharpness = improveSharpness(transformedPerspective);
             cv.imshow(scannedDocument, improvedSharpness);
             //cv.imshow(scannedDocument, transformedPerspective);
@@ -155,7 +155,11 @@ $(async function() {
             cap.read(src);
             
             // contourDetails = getContourDetails(src, edges => cv.imshow(overlay, edges));
-            contourDetails = getContourDetails(src, edges => {});
+            const tempContourDetails = getContourDetails(src, edges => {});
+
+            if (tempContourDetails !== null) {
+                contourDetails = tempContourDetails;
+            }
 
             if (contourDetails) {
                 // cv.imshow(overlay, src);
@@ -168,7 +172,7 @@ $(async function() {
 
             // schedule processing
             // let delay = 1000/FPS - (Date.now() - begin);
-            let delay = 1000 - (Date.now() - begin);
+            let delay = 500 - (Date.now() - begin);
             timer = setTimeout(processVideo, delay);
         };
 

@@ -49,13 +49,21 @@ function getContourDetails(source, onEdgesFound) {
             });
         }
 
-        // Check if we found exactly four corner points
-        if (points.length === 4) {
+        // Check if we found at least four points
+        if (points.length < 4)
+            continue;
+
+        // detect corner points
+        const classifiedPoints = classifyPoints(points);
+        const alignedPoints = [ classifiedPoints.tl, classifiedPoints.tr, classifiedPoints.br, classifiedPoints.bl ];
+
+        // if the corner points could be classified
+        if (alignedPoints.every(point => point !== null)) {
             contours.delete();
 
             return {
                 contour: approx,
-                points
+                points: alignedPoints,
             };
         }
     }
@@ -71,8 +79,8 @@ function drawPoints(contourDetails, canvas, ratio) {
 
     if (ratio) {
         points = points.map(point => ({
-            x: point.x *= ratio,
-            y: point.y *= ratio,
+            x: point.x * ratio,
+            y: point.y * ratio,
         }));
     }
 
@@ -84,13 +92,17 @@ function drawPoints(contourDetails, canvas, ratio) {
         context.arc(circle.x, circle.y, 5, 0, Math.PI*2);
         context.fillStyle = "yellow";
         context.strokeStyle = "yellow";
-        context.lineWidth = 10;
+        context.lineWidth = 5;
         context.fill();
         context.stroke();
+
+        // Line between current and next point (last point connects to first)
+        const nextPointCenter = i === points.length - 1 ? points[0] : points[i + 1];
         context.beginPath();
         context.moveTo(circle.x, circle.y);
-        context.lineTo( points[i-1>=0?i-1:3].x,  points[i-1>=0?i-1:3].y);
+        context.lineTo(nextPointCenter.x, nextPointCenter.y);
         context.stroke();
+        
       }
 }
 
@@ -107,10 +119,10 @@ function drawContour(contourDetails, canvas) {
 }
 
 function classifyPoints(points) {
-    const minX = Math.min(points[0].x, points[1].x, points[2].x, points[3].x);
-    const minY = Math.min(points[0].y, points[1].y, points[2].y, points[3].y);
-    const maxX = Math.max(points[0].x, points[1].x, points[2].x, points[3].x);
-    const maxY = Math.max(points[0].y, points[1].y, points[2].y, points[3].y);
+    const minX = Math.min(...points.map(point => point.x));
+    const minY = Math.min(...points.map(point => point.y));
+    const maxX = Math.max(...points.map(point => point.x));
+    const maxY = Math.max(...points.map(point => point.y));
 
     const middleX = (maxX - minX) / 2 + minX;
     const middleY = (maxY - minY) / 2 + minY;
@@ -137,8 +149,8 @@ function transformPerspective(source, contourDetails, ratio) {
     
     if (ratio) {
         points = points.map(point => ({
-            x: point.x /= ratio,
-            y: point.y /= ratio,
+            x: point.x / ratio,
+            y: point.y / ratio,
         }));
     }
 
