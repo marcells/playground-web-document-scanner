@@ -186,10 +186,9 @@ function transformPerspective(source, contourDetails, ratio) {
 function improveSharpness(source) {
     let destination = new cv.Mat();
     
-    cv.cvtColor(source, source, cv.COLOR_RGBA2GRAY, 0);
-    // const kernel = cv.matFromArray(3,3,cv.CV_32FC1, [-1, 0, 1, -2 , 0, 2, -1 ,0 ,1]);
-    // cv.filter2D(source, source, -1, kernel);
-    cv.adaptiveThreshold(source, destination, 400, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 3, 2);
+    cv.cvtColor(source, source, cv.COLOR_RGBA2GRAY, 0);    
+    cv.medianBlur(source, destination, 5);
+    cv.adaptiveThreshold(destination, destination, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
 
     return destination;
 }
