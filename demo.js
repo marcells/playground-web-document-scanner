@@ -35,6 +35,14 @@ $(async function() {
             cv.imshow(scannedDocument, improvedSharpness);
             //cv.imshow(scannedDocument, transformedPerspective);
 
+            Tesseract.recognize(
+                scannedDocument,
+                'deu+eng',
+                { logger: m => console.log(m) }
+              ).then(({ data: { text } }) => {
+                alert(text);
+              });
+
             improvedSharpness.delete();
             transformedPerspective.delete();
 

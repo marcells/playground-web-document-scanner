@@ -1,4 +1,19 @@
 $(async function() {
+    const devicesSelect = $('#devices');
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = devices.filter(x => x.kind === 'videoinput');
+
+    videoDevices.forEach(x => devicesSelect.append($("<option />").val(x.deviceId).text(x.label)));
+
+    devicesSelect.change(async () => await go(devicesSelect.val()));
+});
+
+async function go() {
+    const selectedValue = $('#devices').val();
+
+    if (selectedValue === 'choose')
+        return;
+    
     const video = document.getElementById('videoInput');
     const debugPreviewEdges = document.getElementById('debugPreviewEdges');
     const debugPreviewArea = document.getElementById('debugPreviewArea');
@@ -26,8 +41,9 @@ $(async function() {
         const contourDetails = getContourDetails(src, edges => cv.imshow(debugPreviewEdges, edges));
 
         if (contourDetails) {
-            cv.imshow(debugPreviewArea, src);
-            drawContour(contourDetails, debugPreviewArea);
+            // cv.imshow(debugPreviewArea, src);
+            // drawContour(contourDetails, debugPreviewArea);
+            drawPoints(contourDetails, debugPreviewArea);
 
             // recognized Points could be modified/corrected by the user here
 
@@ -46,11 +62,16 @@ $(async function() {
         setTimeout(processVideo, delay);
     };
 
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: {
+                deviceId: { exact: selectedValue } 
+            },
+            audio: false 
+        });
     
     video.srcObject = stream;
     video.play();
 
     streaming = true;
     setTimeout(processVideo, 0);
-});
+}

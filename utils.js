@@ -4,7 +4,7 @@ function getContourDetails(source, onEdgesFound) {
     const blurred = new cv.Mat();
 
     cv.cvtColor(source, gray, cv.COLOR_BGR2GRAY);
-    cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 5);
+    cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
     cv.Canny(blurred, edges, 100, 200);
 
     onEdgesFound(edges);
@@ -187,7 +187,7 @@ function improveSharpness(source) {
     let destination = new cv.Mat();
     
     cv.cvtColor(source, source, cv.COLOR_RGBA2GRAY, 0);    
-    cv.medianBlur(source, destination, 5);
+    cv.GaussianBlur(source, destination, new cv.Size(7, 7), 0);
     cv.adaptiveThreshold(destination, destination, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
 
     return destination;
