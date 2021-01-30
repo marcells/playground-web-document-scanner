@@ -85,7 +85,7 @@ $(async function() {
 
     const flashButton = $('#flash-button');
     flashButton.click(function () {
-        const isEnabled = flashButton.val() === true;
+        const isEnabled = flashButton.val() === 'true';
 
         const track = stream.getVideoTracks()[0];
 
