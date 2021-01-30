@@ -4,7 +4,12 @@ $(async function() {
     let edgeRatio = 1.0;
     let contourDetails = null;
 
-    $('#scan-button').click(function() {
+    $('#downloadScannedDocument').click(function() {
+        this.href = $('#scannedDocument')[0].toDataURL();
+        this.download = 'scan.png';
+    });
+
+    $('#scan-button').click(async function() {
         if (scanned) {
             $('#scannedDocument').hide();
             $('#overlay').show();
@@ -32,23 +37,32 @@ $(async function() {
 
             const transformedPerspective = transformPerspective(src, contourDetails, edgeRatio);
             const improvedSharpness = improveSharpness(transformedPerspective);
-            cv.imshow(scannedDocument, improvedSharpness);
+            
+            // cv.resize(improvedSharpness, improvedSharpness, new cv.Size(0, 0), 0.4, 0.4, cv.INTER_AREA);
+            
+            const target = new cv.Mat();
+            improvedSharpness.convertTo(target, cv.CV_8U);
+
+            cv.imshow(scannedDocument, target);
             //cv.imshow(scannedDocument, transformedPerspective);
 
-            Tesseract.recognize(
-                scannedDocument,
-                'deu+eng',
-                { logger: m => console.log(m) }
-              ).then(({ data: { text } }) => {
-                alert(text);
-              });
-
+            target.delete();
             improvedSharpness.delete();
             transformedPerspective.delete();
 
             $('#overlay').hide();
             $('#videoInput').hide();
             $('#scannedDocument').show();
+
+            const result = await Tesseract.recognize(
+                scannedDocument, 'deu+eng', {
+                    langPath: 'https://tessdata.projectnaptha.com/4.0.0_fast',
+                    logger: m => console.log(m)
+                },
+                { logger: m => console.log(m) });
+
+            console.log(result);
+            alert(result.data.text);
         }
 
         src.delete();
@@ -68,6 +82,21 @@ $(async function() {
     let streaming = false;
     let timer = null;
     let stream = null;
+
+    const flashButton = $('#flash-button');
+    flashButton.click(function () {
+        const isEnabled = flashButton.val() === true;
+
+        const track = stream.getVideoTracks()[0];
+
+        track.applyConstraints({
+            advanced: [{torch: !isEnabled}]
+        });
+
+        flashButton.val(!isEnabled);
+
+        flashButton.text(isEnabled ? 'Flash: Activate' : 'Flash: Deactivate');
+    });
 
     devicesSelect.change(async function () {
         devicesSelect.hide();
@@ -107,14 +136,21 @@ $(async function() {
         edgeDetectionVideo.srcObject = stream;
         edgeDetectionVideo.play();
 
+        const track = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(track);
+        const photoCapabilities = await imageCapture.getPhotoCapabilities();
+
+        
         $('#scan-button').show();
+        $('#flash-button').show();
 
         streaming = true;
 
         // Logging stuff
-        console.log(stream.getVideoTracks()[0].getCapabilities());
-        console.log(stream.getVideoTracks()[0].getConstraints());
-        console.log(stream.getVideoTracks()[0].getSettings());
+        console.log('Track caps', stream.getVideoTracks()[0].getCapabilities());
+        console.log('Track constraints', stream.getVideoTracks()[0].getConstraints());
+        console.log('Track settings', stream.getVideoTracks()[0].getSettings());
+        console.log('Photo caps', photoCapabilities);
 
         const overlay = document.getElementById('overlay');
         
